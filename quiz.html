@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>SBTI 테스트 - 커스텀 가이드 포함</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* 1. 전체적인 배경 및 글자 스타일 */
+    body {
+      background-color: black; /* 전체 배경색 */
+      color: white;            /* 전체 글자색 */
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+      overflow-x: hidden;
+    }
+
+    h1 { margin-bottom: 20px; }
+
+    /* 2. 상단 진행바(Progress Bar) 디자인 */
+    .progress-wrapper { margin: 20px 0; }
+    .progress-text {
+      text-align: right;
+      font-size: 4vw;
+      color: white;
+      opacity: 0.7;
+      margin-bottom: 5px;
+    }
+    .progress-container {
+      width: 100%;
+      background-color: #333; /* 게이지 빈 공간 색상 */
+      border-radius: 10px;
+      overflow: hidden;
+      height: 20px;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background-color: #ff4444; /* 채워지는 바의 색상 (빨간색) */
+      transition: width 0.3s ease;
+    }
+
+    /* 3. 질문 박스 디자인 */
+    .question {
+      margin: 40px auto;
+      font-size: 5vw;
+      background-color: white; /* 질문 상자 배경 */
+      color: black;            /* 질문 상자 글자색 */
+      padding: 20px;
+      border-radius: 12px;
+      width: 90%;
+      box-sizing: border-box;
+    }
+
+    /* 4. 선택지 버튼 디자인 */
+    .options {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+    }
+    .option {
+      width: 90%;
+      margin: 10px 0;
+      padding: 20px;
+      background-color: #222;  /* 버튼 배경색 */
+      border: 2px solid white; /* 버튼 테두리 */
+      border-radius: 12px;
+      font-size: 4vw;
+      cursor: pointer;
+      text-align: center;
+      line-height: 1.4;
+    }
+    /* 버튼을 눌렀을 때의 반응(반전 효과) */
+    .option:active { 
+      background-color: white; 
+      color: black; 
+    }
+
+    /* 5. 결과 및 로딩창 스타일 */
+    #result {
+      margin-top: 50px;
+      font-size: 6vw;
+      font-weight: bold;
+    }
+    #loading {
+      font-size: 5vw;
+      margin-top: 250px;
+      opacity: 0.8;
+    }
+
+    /* 6. 애니메이션 효과 (옆으로 밀려나는 효과) */
+    .slide-out { animation: slideOut 0.5s forwards; }
+    .slide-in { animation: slideIn 0.5s forwards; }
+    @keyframes slideOut {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(-100%); opacity: 0; }
+    }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <h1 id="title">SBTI 테스트</h1>
+  
+  <div class="progress-wrapper" id="progress-wrapper">
+    <div class="progress-text" id="progress-text">0/9</div>
+    <div class="progress-container">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+  </div>
+  
+  <div id="quiz"></div>
+  
+  <div id="loading" style="display:none;">결과를 계산 중...</div>
+  
+  <div id="result"></div>
+
+  <script>
+    /* -----------------------------------------------------------
+       [데이터 설정 영역] 질문과 답변 내용을 수정하세요.
+       - A, B, C, D, E, F는 각 성향을 구분하는 '코드'입니다.
+       ----------------------------------------------------------- */
+  const questions = [
+    { q: "공연장에서 나는?",
+      A: { code: "E", text: "맨 앞줄에서 떼창" },
+      B: { code: "I", text: "맨 뒤에서 조용히 감상" }
+    },
+    { q: "음악을 들을 때?",
+      A: { code: "E", text: "친구들과 공유하며 듣기" },
+      B: { code: "I", text: "혼자 이어폰 꽂고 몰입" }
+    },
+    { q: "스트레스 풀 때는?",
+      A: { code: "E", text: "빵빵한 사운드 클럽/페스티벌" },
+      B: { code: "I", text: "방 안에서 나만의 플레이리스트" }
+    },
+
+    { q: "가사를 볼 때?",
+      A: { code: "S", text: "현실적인 경험과 상황" },
+      B: { code: "N", text: "비유적인 가사와 세계관" }
+    },
+    { q: "노래를 들으며 하는 생각?",
+      A: { code: "S", text: "비트가 좋네, 가사가 들리네" },
+      B: { code: "N", text: "이 가수는 어떤 마음으로 썼을까?" }
+    },
+    { q: "새로운 곡을 발견하면?",
+      A: { code: "S", text: "비슷한 스타일의 익숙한 곡" },
+      B: { code: "N", text: "완전 실험적이고 새로운 사운드" }
+    },
+
+    { q: "노래를 비평할 때?",
+      A: { code: "T", text: "믹싱 상태나 보컬 스킬 위주" },
+      B: { code: "F", text: "멜로디가 주는 감동 위주" }
+    },
+    { q: "친구가 슬픈 노래를 추천하면?",
+      A: { code: "T", text: "곡의 완성도가 어떤지 분석함" },
+      B: { code: "F", text: "친구의 기분이 어떤지 물어봄" }
+    },
+    { q: "가장 중요한 건?",
+      A: { code: "T", text: "탄탄한 구성과 깔끔한 마무리" },
+      B: { code: "F", text: "가슴을 울리는 가사와 분위기" }
+    },
+
+    { q: "플레이리스트 정리법?",
+      A: { code: "J", text: "장르별, 무드별로 칼각 정리" },
+      B: { code: "P", text: "그때그때 원하는데로 대로 추가" }
+    },
+    { q: "공연 보러 갈 때?",
+      A: { code: "J", text: "타임테이블과 동선 완벽 숙지" },
+      B: { code: "P", text: "발길 닿는 대로 즐기기" }
+    },
+    { q: "음악 작업(또는 취미)을 한다면?",
+      A: { code: "J", text: "매일 정해진 시간에 꾸준히" },
+      B: { code: "P", text: "영감이 떠오를 때 몰아서" }
+    }
+  ];
+
+    /* 2. 16가지 MBTI 결과 데이터 */
+    const results = {
+      "ESTJ": " 힙합 꼰대(?) - 근본과 정석을 사랑하는 리더",
+      "ESTP": " 올라운더 플레이어 - 트렌드에 민감한 행동파",
+      "ESFJ": " 페스티벌 인싸 - 함께 즐기는 음악이 최고!",
+      "ESFP": " 무대 위의 주인공 - 타고난 끼를 가진 퍼포머",
+      "ENTJ": " 야망 있는 프로듀서 - 완벽한 결과물을 추구함",
+      "ENTP": " 실험적 아티스트 - 남들이 안 하는 사운드 매니아",
+      "ENFJ": " 감성 전도사 - 음악으로 세상에 메시지를 전달함",
+      "ENFP": " 자유로운 영혼 - 장르에 얽매이지 않는 믹스매치",
+      "ISTJ": " 클래식 콜렉터 - 보물 같은 명곡들을 수집하는 장인",
+      "ISTP": " 기술파 비트메이커 - 말이 필요 없는 실력자",
+      "ISFJ": " 힐링 사운드 매니아 - 포근한 위로를 주는 곡 선호",
+      "ISFP": " 힙한 예술가 - 나만의 감성이 곧 장르",
+      "INTJ": " 고독한 천재 - 논리적이고 깊이 있는 사운드 설계",
+      "INTP": " 사운드 분석가 - 비트의 구조를 파헤치는 재미",
+      "INFJ": " 몽환적인 사색가 - 보이지 않는 세계를 노래함",
+      "INFP": " 새벽 감성 장인 - 가사 한 줄에 눈물 훔치는 감성파"
+    };
+
+    let answers = []; // 사용자가 선택한 코드들이 저장될 배열
+
+    /* 질문을 화면에 그리는 함수 */
+    function showQuestion(index, animateIn=true) {
+      if(index >= questions.length) {
+        showResult(); // 모든 질문이 끝나면 결과 출력
+        return;
+      }
+      const q = questions[index];
+      const quizDiv = document.getElementById("quiz");
+      
+      // HTML 구조 생성 (질문 상자 + 선택지 버튼들)
+      quizDiv.innerHTML = `
+        <div class="question ${animateIn ? 'slide-in' : ''}">${q.q}</div>
+        <div class="options ${animateIn ? 'slide-in' : ''}">
+          <div class="option" onclick="selectAnswer('${q.A.code}', ${index})">${q.A.text}</div>
+          <div class="option" onclick="selectAnswer('${q.B.code}', ${index})">${q.B.text}</div>
+        </div>
+      `;
+
+      updateProgress(index);
+    }
+
+    /* 선택지를 클릭했을 때 실행되는 함수 */
+    function selectAnswer(choice, index) {
+      answers.push(choice); // 선택한 알파벳 저장
+      const quizDiv = document.getElementById("quiz");
+      quizDiv.classList.add("slide-out"); // 화면 밖으로 나가는 애니메이션 추가
+      
+      setTimeout(() => {
+        quizDiv.classList.remove("slide-out");
+        showQuestion(index + 1, true); // 다음 질문으로 이동
+      }, 500);
+    }
+
+    /* 진행바 상태 업데이트 함수 */
+    function updateProgress(index) {
+      const progress = (index / questions.length) * 100;
+      document.getElementById("progress-bar").style.width = progress + "%";
+      document.getElementById("progress-text").innerText = index + "/" + questions.length;
+    }
+
+    /* 마지막 결과 화면 출력 함수 */
+    function showResult() {
+      // 상단 제목과 게이지 숨기기
+      document.getElementById("title").style.display = "none";
+      document.getElementById("progress-wrapper").style.display = "none";
+      document.getElementById("quiz").innerHTML = "";
+      
+      // 로딩 애니메이션 보여주기
+      document.getElementById("loading").style.display = "block";
+
+      setTimeout(() => {
+        document.getElementById("loading").style.display = "none";
+        
+        /* [핵심 로직] */
+        function getMostFrequent(arr) {
+          const counts = {};
+          arr.forEach(val => counts[val] = (counts[val] || 0) + 1);
+          return Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
+        }
+
+          // 각 지표별 개수 세기
+          const count = (char) => answers.filter(a => a === char).length;
+      
+          const mbti = [
+            count('E') > count('I') ? 'E' : 'I',
+            count('S') > count('N') ? 'S' : 'N',
+            count('T') > count('F') ? 'T' : 'F',
+            count('J') > count('P') ? 'J' : 'P'
+          ].join('');
+
+
+          // 결과 출력
+          window.location.href = `mbti_group/${mbti}.html`;`
+            
+            <p>${results[mbti] || "아직 데이터가 부족합니다."}</p>
+            `;
+        }, 1500);
+
+        }
+
+    // 첫 질문 시작
+    showQuestion(0);
+  </script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>SBTI 메인 화면</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- 모바일 대응 -->
+  <style>
+    body {
+      background-color: black;
+      color: white;
+      text-align: center;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    h1 {
+      margin-top: 50px;
+      font-size: 8vw; /* 화면 크기에 따라 글자 크기 자동 조정 */
+      letter-spacing: 3px;
+    }
+    .main-image {
+      margin: 50px auto;
+      display: block;
+      width: 90%; /* 모바일 화면에 맞게 자동 줄어듦 */
+      height: auto;
+    }
+    .start-button {
+      display: block;
+      width: 60%; /* 이미지와 비슷한 폭으로 맞춤 */
+      margin: 80px auto 30px auto;
+      padding: 15px;
+      background-color: black;
+      color: white;
+      font-size: 5vw; /* 모바일 화면에 맞게 글자 크기 조정 */
+      text-decoration: none;
+      border: 2px solid white;
+      border-radius: 8px; /* 모바일에서 보기 좋게 둥근 모서리 */
+    }
+    .start-button:active {
+      background-color: white;
+      color: black;
+    }
+  </style>
+</head>
+<body>
+  <h1>SBTI</h1>
+  <img src="PDF/stageburn.png" alt="STAGE BURN" class="main-image">
+  <a href="quiz.html" class="start-button">테스트 시작하기</a>
+</body>
+</html>

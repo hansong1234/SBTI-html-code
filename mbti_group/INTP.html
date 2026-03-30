@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>INTP 힙합 취향</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #000000;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    h1 {
+      padding-top: 35px;
+      font-size: 1.5em;
+      margin: 15px 0;
+      color: #ffffff;
+    }
+    img {
+      width: 90%;
+      max-width: 400px;
+      height: auto;
+      margin: 10px 0;
+      border-radius: 8px;
+    }
+    .box {
+      background-color: #1c1c1c;
+      padding: 15px;
+      margin: 15px auto;
+      width: 95%;
+      border-radius: 8px;
+      color: #e0e0e0;
+      text-align: left;
+      box-sizing: border-box;
+      font-size: 0.95em;
+    }
+    .box p {
+      margin-top: 60px;
+      font-style: italic;
+      color: #ffffff;
+      font-size: 18px;
+    }
+    .box h4{
+      color: #ffffff;
+      margin-bottom: 4px;
+      margin-top: 40px;
+    }
+    .box h2 {
+      margin-top: 50px;     /* 위쪽 공백 */
+      margin-bottom: 50px;  /* 아래쪽 공백 */
+      font-size: 1em;
+      color: #ffffff;
+    }
+    .box h3 {
+      font-style: italic;
+      font-size: 1.1em;
+      margin-top: -10px;
+      margin-bottom: 60px;
+      padding-left: 20px;
+      font-weight: 450;
+      color: #b0b0b0;
+    }
+    .box ul {
+      margin-top: 0;
+      list-style-type: none;
+      padding-left: 20px;
+      margin: 0;
+    }
+    .box li {
+      margin: 4px 0;
+      padding: 4px 0;
+    }
+    hr {
+      border: none;
+      height: 1px;
+      background-color: #555555;
+      width: 90%;
+      margin: 20px auto;
+    }
+    .link-box a {
+      display: inline-block;
+      background-color: #5d00ff;
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .link-box a:hover {
+      background-color: #ff8533;
+    }
+
+    /* 모달 스타일 */
+    .modal {
+      display: none; /* 기본은 숨김 */
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.7); /* 주변 흐릿하게 */
+    }
+    .modal-content {
+      background-color: #1c1c1c;
+      margin: 15% auto;
+      padding: 20px;
+      border-radius: 8px;
+      width: 80%;
+      max-width: 400px;
+      color: #ffffff;
+      text-align: center;
+    }
+    .close {
+      color: #ff8533;
+      float: right;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close:hover {
+      color: #ffffff;
+    }
+    .modal button {
+      background-color: #5d00ff;
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+    .modal button:hover {
+      background-color: #ff8533;
+    }
+      /* LP 회전 애니메이션 */
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .spin {
+    animation: spin 3s linear infinite;
+  }
+
+  </style>
+</head>
+<body>
+  <h1>-사운드 분석가-</h1>
+  <img src="PDF/stageburn.png" alt="ENFJ 힙합 이미지">
+  <div class="box">
+    <h2>#비트_분석중 #구조적인_음악 #호기심_자극 #디테일_사운드</h2>
+    <hr>
+    <h4>추천 "스테이지번" 힙합 리스트</h4>
+    <ul>
+      <li>● 생각 - </li>
+      <li>● 010 - 김영민</li>
+    </ul>
+        <h4>추천 힙합 리스트</h4>
+    <ul>
+      <li>● 아크라포빅 - 하모</li>
+      <li>● 미안해 널 미안해 - 식케이</li>
+      <li>● Fadeaway - Jvcki Wai</li>
+    </ul>
+  </div>
+  <div class="link-box">
+    <a id="openModal">추천 "스테이지번" 노래 들으러 가기!</a>
+  </div>
+
+  <!-- 모달 -->
+  <div id="myModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>STAGEBURN</h2>
+      <h2>"축제곡 미리 들어보기"</h2>
+      <img id="lpImage" src="PDF/LP.png" alt="ENFJ 힙합 이미지">
+      <p>레코드 판을 클릭해보세요!</p>
+      <button onclick="window.open('https://soundcloud.com/len2mass','_blank')">SoundCloud로 이동</button>
+      <button onclick="window.open('https://www.instagram.com/hknu_stageburn?igsh=MXIwYm1ydWg5czE0MA==','_blank')">Instagram으로 이동</button>
+    </div>
+  </div>
+
+<script>
+  const modal = document.getElementById("myModal");
+  const btn = document.getElementById("openModal");
+  const span = document.getElementsByClassName("close")[0];
+  const lpImage = document.getElementById("lpImage");
+
+    // sound 폴더 안에 있는 노래 파일 목록
+  const songs = [
+    "sound/song1.mp3",
+    "sound/song2.mp3",
+    "sound/song3.mp3"
+  ];
+
+  // 버튼 클릭 시 모달 열기
+  btn.onclick = function() {
+    modal.style.display = "block";
+    document.body.style.overflow = "hidden"; // 배경 스크롤도 막기
+  }
+
+  // 닫기 버튼 클릭 시 모달 닫기
+  span.onclick = function() {
+    modal.style.display = "none";
+    document.body.style.overflow = "auto"; // 닫으면 다시 스크롤 가능
+  }
+  // LP 이미지 클릭 시 회전 + 랜덤 음악 재생
+  lpImage.onclick = function() {
+    if (lpImage.classList.contains("spin")) {
+      lpImage.classList.remove("spin"); // 회전 멈춤
+      if (audio) {
+        audio.pause(); // 음악 멈춤
+        audio = null;
+      }
+    } else {
+      lpImage.classList.add("spin"); // 회전 시작
+      const randomSong = songs[Math.floor(Math.random() * songs.length)];
+      audio = new Audio(randomSong);
+      audio.play();
+    }
+  }
+
+</script>
+</body>
+</html>
